@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -9,21 +10,41 @@ export class UsersController {
   // use '/:id' for catching param and '/:id?' for optional param
 
   @Get(':id')
-    public getUserById(@Param('id') id?: string,
-        @Query('role') role?: string,
-        @Query('age') age?: number) {
-      if(id){
-return `User with id: ${id}`;
-      }
-      if(role){return `Users with role: ${role}`;}
-     if(age){return `Users with age: ${age}`;}
-      return 'No id provided';
-    
+  public getUserById(
+    @Param('id') id?: string,
+    @Query('role') role?: string,
+    @Query('age') age?: number,
+  ) {
+    if (id) {
+      return `User with id: ${id}`;
+    }
+    if (role) {
+      return `Users with role: ${role}`;
+    }
+    if (age) {
+      return `Users with age: ${age}`;
+    }
+    return 'No id provided';
   }
 
   @Post()
-  public createUsers(@Body() requestBody: { name: string; age: number; role: string }) {
+
+  // using @body decorator to get the whole body
+  public createUsers(
+    @Body() requestBody: { name: string; age: number; role: string },
+  ) {
     console.log(requestBody);
-      return 'Create user';
+    return 'Create user';
+  }
+
+  @Post()
+
+      // using @Req decorator for using express request to get the whole body
+       // ! not recommended, unless you need something specific from express like alter the request what not possible with nestjs 
+  public createUserProfile(
+    @Req() requestBody:Request,
+  ) {
+    console.log(requestBody);
+    return 'Create user profile';
   }
 }
