@@ -1,5 +1,7 @@
-import { Body, Controller, DefaultValuePipe, Get, Headers, Ip, Param, ParseIntPipe, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Headers, Ip, Param, ParseIntPipe, Patch, Post, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { PatchUserDto } from './dtos/patch-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -37,7 +39,8 @@ export class UsersController {
 
   // using @body decorator to get the whole body
   public createUsers(
-    @Body() requestBody: { name: string; age: number; role: string },
+    // using ValidationPipe to validate the request body based on the dto class-validator decorators and use the createUserDto class to type as type the request body
+    @Body() requestBody: CreateUserDto,
   ) {
     console.log(requestBody);
     return 'Create user';
@@ -56,5 +59,13 @@ export class UsersController {
     console.log(headers);
     console.log(requestBody);
     return 'Create user profile';
+  }
+
+  @Patch()
+  public updateUser(
+     @Body() body: PatchUserDto
+  ) {
+   console.log(body);
+    return body;
   }
 }
