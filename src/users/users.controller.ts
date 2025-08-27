@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Headers, Ip, Param, ParseIntPipe, Post, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
 
 @Controller('users')
@@ -14,7 +14,13 @@ export class UsersController {
     @Param('id') id?: string,
     @Query('role') role?: string,
     @Query('age') age?: number,
+    // using DefaultValuePipe to set default value if no value is provided in query
+    // using ParseIntPipe to convert string to number
+    @Query('limit', new DefaultValuePipe(10),ParseIntPipe) limit?: number,
+    @Query('offset') offset?: number,
+    @Query('page',new DefaultValuePipe(1),ParseIntPipe) page?: number,
   ) {
+    console.log({ limit, offset, page });
     if (id) {
       return `User with id: ${id}`;
     }
@@ -42,8 +48,12 @@ export class UsersController {
       // using @Req decorator for using express request to get the whole body
        // ! not recommended, unless you need something specific from express like alter the request what not possible with nestjs 
   public createUserProfile(
-    @Req() requestBody:Request,
+    @Req() requestBody: Request,
+    @Headers() headers: any,
+    @Ip() ip: string,
   ) {
+    console.log(ip);
+    console.log(headers);
     console.log(requestBody);
     return 'Create user profile';
   }
