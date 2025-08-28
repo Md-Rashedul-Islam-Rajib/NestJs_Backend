@@ -2,14 +2,22 @@ import { Body, Controller, DefaultValuePipe, Get, Headers, Ip, Param, ParseIntPi
 import { Request } from 'express';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { PatchUserDto } from './dtos/patch-user.dto';
+import { UsersService } from './providers/users.service';
+import { GetUserParamsDto } from './dtos/getUserParams.dto';
 
 @Controller('users')
 export class UsersController {
+  constructor(
+    private readonly usersService: UsersService, // dependency injection
+  ){}
+  
   @Get()
-  public getAllUsers() {
-    return 'List of all users';
+  public getAllUsers(@Query() params: GetUserParamsDto) {
+    const limit: number = params.limit ? params.limit : 10;
+    const page: number = params.page ? params.page : 1;
+    return this.usersService.findAllUsers(params, limit, page);
   }
-  // use '/:id' for catching param and '/:id?' for optional param
+  
 
   @Get(':id')
   public getUserById(
