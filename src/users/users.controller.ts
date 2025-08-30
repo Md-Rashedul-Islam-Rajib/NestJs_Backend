@@ -4,8 +4,10 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { PatchUserDto } from './dtos/patch-user.dto';
 import { UsersService } from './providers/users.service';
 import { GetUserParamsDto } from './dtos/getUserParams.dto';
+import { ApiAcceptedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
+  @ApiTags('Users') // grouping the endpoints in swagger ui
 export class UsersController {
   constructor(
     private readonly usersService: UsersService, // dependency injection
@@ -20,7 +22,17 @@ export class UsersController {
   
 
   @Get(':id')
-  public getUserById(
+  @ApiOperation({ summary: 'Get user by ID or filter by role, age, limit, offset, page' })
+  @ApiAcceptedResponse({ description: 'The user has been successfully fetched.' })
+    @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+    @ApiQuery({ name: 'role', required: false, type: String, description: 'Role of the user to filter' })
+    @ApiQuery({ name: 'age', required: false, type: Number, description: 'Age of the user to filter' })
+    @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items to return', example: 10 })
+    @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Number of items to skip', example: 0 })
+    @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for pagination', example: 1 })
+  
+      public getUserById(
     @Param('id') id?: string,
     @Query('role') role?: string,
     @Query('age') age?: number,

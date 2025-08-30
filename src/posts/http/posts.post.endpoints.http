@@ -1,2 +1,21 @@
-POST http://localhost:3000/users
+POST http://localhost:3000/posts
 Content-Type: application/json
+
+{
+    "title": "My First Post",
+    "postType": "blog",
+    "postStatus": "draft",
+    "slug": "my-first-post",
+    "content": "This is the content of my first post.",
+    "PublishOn": "2024-10-01T10:00:00Z",
+    "metaOptions": [
+        {
+            "key": "author",
+            "value": "John Doe"
+        },
+        {
+            "key": "category",
+            "value": "Technology"
+        }
+    ]
+}

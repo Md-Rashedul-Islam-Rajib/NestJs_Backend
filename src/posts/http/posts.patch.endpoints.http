@@ -1,7 +1,8 @@
-PATCH http://localhost:3000/users
+PATCH http://localhost:3000/posts
 Content-Type: application/json
 
 {
-    "name": "John Doe",
-    "email": ""
-    }
+    "id": 1,
+    "title": "Updated Post",
+    "content": "This is the updated content of the post."
+}
