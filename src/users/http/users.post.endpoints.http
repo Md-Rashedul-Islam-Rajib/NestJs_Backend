@@ -1,4 +1,10 @@
 POST http://localhost:3000/users
 Content-Type: application/json
 
-{ "name": "nobody", "age": 20, "role": "admin" }
+{
+    "name": "newuser",
+    "email": "nesuser@email.com",
+    
+    "age": 30,
+    "password": "#1nEwpassword"
+}

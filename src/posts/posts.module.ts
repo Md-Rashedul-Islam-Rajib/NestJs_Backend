@@ -2,10 +2,18 @@ import { Module } from '@nestjs/common';
 import { PostsController } from './posts.controller';
 import { PostsService } from './providers/posts.service';
 import { UsersModule } from 'src/users/users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Post } from './post.entity';
+import { MetaOptionsModule } from 'src/meta-options/meta-options.module';
+import { MetaOption } from 'src/meta-options/meta-option.entity';
 
 @Module({
   controllers: [PostsController],
   providers: [PostsService],
-  imports: [UsersModule] // import UsersModule to use UsersService in PostsService
+  imports: [
+    UsersModule, // import UsersModule to use UsersService in PostsService
+    MetaOptionsModule, // import MetaOptionsModule to use MetaOptionsService in PostsService
+TypeOrmModule.forFeature([Post,MetaOption]) // import Post and meta option entity for TypeORM
+  ] 
 })
 export class PostsModule {}

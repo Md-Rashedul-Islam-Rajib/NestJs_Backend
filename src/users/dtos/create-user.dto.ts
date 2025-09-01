@@ -18,8 +18,8 @@ export class CreateUserDto {
     @IsNotEmpty()
     @ApiProperty({ description: 'Age of the user', example: 25 })
   age: number;
-  @ApiProperty({ description: 'Role of the user', example: 'admin' })
-  role: string;
+  // @ApiProperty({ description: 'Role of the user', example: 'admin' })
+  // role: string;
   
   @IsString()
   @IsNotEmpty()

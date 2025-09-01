@@ -63,7 +63,7 @@ export class UsersController {
     @Body() requestBody: CreateUserDto,
   ) {
     console.log(requestBody);
-    return 'Create user';
+    return this.usersService.createUser(requestBody);
   }
 
   @Post()

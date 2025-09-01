@@ -1,6 +1,10 @@
 import { AuthService } from 'src/auth/providers/auth.service';
 import { GetUserParamsDto } from './../dtos/getUserParams.dto';
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { User } from '../user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from '../dtos/create-user.dto';
 /**
  * class to connect users tables and perform business logic
  */
@@ -8,10 +12,26 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 export class UsersService {
 
     constructor(
+        @InjectRepository(User)
+        private userRepository: Repository<User>, // using repository pattern
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService // dependency injection
 ) { }
 
+ public async createUser(createUserDto: CreateUserDto): Promise<User> {
+     const existingUser = await this.userRepository.findOne({
+         where:
+         {
+             email: createUserDto.email
+         }
+     });
+     if (existingUser) {
+         throw new Error('User with this email already exists');
+     }
+     const newUser = this.userRepository.create(createUserDto);
+        return this.userRepository.save(newUser);
+    }   
+    
     /**
      * find all users with optional pagination and filtering
      * @param params : params to filter users

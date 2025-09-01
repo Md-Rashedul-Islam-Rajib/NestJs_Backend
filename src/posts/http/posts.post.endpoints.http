@@ -3,19 +3,16 @@ Content-Type: application/json
 
 {
     "title": "My First Post",
-    "postType": "blog",
-    "postStatus": "draft",
     "slug": "my-first-post",
     "content": "This is the content of my first post.",
-    "PublishOn": "2024-10-01T10:00:00Z",
-    "metaOptions": [
-        {
-            "key": "author",
-            "value": "John Doe"
-        },
-        {
-            "key": "category",
-            "value": "Technology"
+    "tags": ["introduction", "welcome"],
+    "postType": "post",
+    "postStatus": "draft",
+    "publishOn": "2024-10-01T10:00:00Z",
+    "metaOption": {
+        "metaValue": {
+            "sidebarEnabled": true,
+            "theme": "dark"
         }
-    ]
+    }
 }
