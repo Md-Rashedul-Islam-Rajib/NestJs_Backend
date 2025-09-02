@@ -5,6 +5,8 @@ import { Post } from "../post.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { MetaOptionsService } from "src/meta-options/providers/meta-options.service";
+import { TagsService } from "src/tags/providers/tags.service";
+import { PatchPostDto } from "../dtos/patch-post.dto";
 
 @Injectable()
 export class PostsService {
@@ -12,6 +14,7 @@ export class PostsService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>, // using repository pattern
     private readonly usersService: UsersService, // dependency injection
+    private readonly tagsService: TagsService, // dependency injection
     private readonly metaOptionsService: MetaOptionsService,
   ) {}
   public async findAllPosts() {
@@ -37,16 +40,26 @@ export class PostsService {
       throw new ConflictException('Post with this title already exists');
     }
 
+    const author = await this.usersService.findUserById(createPostDto.authorId);
     // Create post entity manually to ensure proper typing
+if (!author) {
+      throw new NotFoundException('Author not found');
+    }
+
+    const tags = await this.tagsService.findAllTags(createPostDto.tags || []);
+
+    if (tags.length !== (createPostDto.tags || []).length) {
+      throw new NotFoundException('One or more tags not found');
+    }
     const newPost = new Post();
     newPost.title = createPostDto.title;
     newPost.postType = createPostDto.postType;
     newPost.postStatus = createPostDto.postStatus;
     newPost.slug = createPostDto.slug;
     newPost.content = createPostDto.content;
-    newPost.tags = createPostDto.tags;
+newPost.tags = tags; 
     newPost.publishOn = createPostDto.publishOn;
-
+    newPost.author = author;
     // Handle meta option if provided
     if (createPostDto.metaOption) {
       const metaOption = await this.metaOptionsService.create(
@@ -58,12 +71,24 @@ export class PostsService {
     return this.postRepository.save(newPost);
   }
 
-  public updatePost(id: number, title?: string, content?: string) {
-    return {
-      id,
-      title: title || 'Updated Title',
-      content: content || 'Updated Content',
-    };
+  public async updatePost(patchPostDto: PatchPostDto) {
+    const tags = patchPostDto.tags ? await this.tagsService.findAllTags(patchPostDto.tags) : null;
+    if (!tags) {
+    throw new NotFoundException("tags not found")
+    }
+
+    const post = await this.postRepository.findOneBy({
+      id: patchPostDto.id
+    })
+    if (!post) {
+      throw new NotFoundException("post not found")
+    }
+    post.title = patchPostDto.title ?? post.title
+    post.tags = tags
+    // rest of the property here
+return await this.postRepository.save(post)
+
+    return;
   }
 
   public async deletePost(id: number) {

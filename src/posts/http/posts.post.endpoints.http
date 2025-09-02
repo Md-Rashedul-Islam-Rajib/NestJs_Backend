@@ -2,10 +2,10 @@ POST http://localhost:3000/posts
 Content-Type: application/json
 
 {
-    "title": "My First Post",
-    "slug": "my-first-post",
-    "content": "This is the content of my first post.",
-    "tags": ["introduction", "welcome"],
+    "title": "My First Post 2",
+    "slug": "my-first-post 2",
+    "content": "This is the content of my first post. ",
+    "tags": [1],
     "postType": "post",
     "postStatus": "draft",
     "publishOn": "2024-10-01T10:00:00Z",
@@ -14,5 +14,7 @@ Content-Type: application/json
             "sidebarEnabled": true,
             "theme": "dark"
         }
-    }
+    },
+    "authorId": 1
+    
 }

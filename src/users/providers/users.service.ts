@@ -66,7 +66,7 @@ export class UsersService {
  * @returns : user object
  */
 
-    public findUserById(id: number) {
-return { id, name: 'John Doe' }; 
+    public async findUserById(id: number) {
+return await this.userRepository.findOne({ where: { id } }); 
     }
 }

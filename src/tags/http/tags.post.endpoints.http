@@ -1,0 +1,9 @@
+POST http://localhost:3000/tags
+Content-Type: application/json
+
+{
+  "name": "nestjs",
+  "slug": "nestjs",
+  "description": "application",
+  "schema": "{ \"type\": \"object\", \"properties\": { \"id\": { \"type\": \"string\" }, \"name\": { \"type\": \"string\" }, \"slug\": { \"type\": \"string\" }, \"description\": { \"type\": \"string\" } }, \"required\": [\"name\", \"slug\"] }"
+}

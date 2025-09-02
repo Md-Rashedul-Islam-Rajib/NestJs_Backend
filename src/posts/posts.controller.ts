@@ -34,6 +34,6 @@ export class PostsController {
     @Patch()
     public updatePost(@Body() patchPostDto: PatchPostDto) {
         console.log(patchPostDto);
-        return this.postsService.updatePost(1, 'Updated Post', 'This is the updated content of the post.');
+        return this.postsService.updatePost(patchPostDto);
     }
 }

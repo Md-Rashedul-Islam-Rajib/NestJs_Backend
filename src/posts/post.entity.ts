@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -10,6 +11,7 @@ import { PostStatus } from './enums/postStatus.enum';
 import { PostType } from './enums/postType.enum';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { User } from 'src/users/user.entity';
+import { Tag } from 'src/tags/tag.entity';
 
 @Entity()
 export class Post {
@@ -45,7 +47,11 @@ export class Post {
   publishOn?: Date;
 
   @Column('simple-array', { nullable: true })
-  tags?: string[];
+  @ManyToOne(() => Tag,
+    tag => tag.posts, { eager: true } // Many posts can have one tag
+  ) 
+    @JoinTable() // Owning side of the relationship
+  tags?: Tag[];
 
   @OneToOne(() => MetaOption,
     (MetaOption) => MetaOption.post, // inverse side of the relationship
@@ -60,4 +66,5 @@ export class Post {
 
   @ManyToOne(() => User, user => user.post, { eager: true }) // Many posts can belong to one user
   author: User;
+
 }
