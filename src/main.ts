@@ -11,7 +11,10 @@ async function bootstrap() {
       whitelist: true, // whitelisting the properties that are not in the dto will be removed from the request body
       forbidNonWhitelisted: true, // throw an error if any extra property is sent in the request body that is not in the dto
     transform: true, // automatically transform the payloads to be objects typed according to their DTO classes (e.g. string to number conversion based on dtoF
-    }),
+      transformOptions: {
+    enableImplicitConversion: true // by enabling this, validation pipe implicitly convert types 
+  }  
+  }),
   );
 
 

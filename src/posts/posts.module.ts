@@ -7,11 +7,13 @@ import { Post } from './post.entity';
 import { MetaOptionsModule } from 'src/meta-options/meta-options.module';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { TagsModule } from 'src/tags/tags.module';
+import { PaginationModule } from 'src/common/pagination/pagination.module';
 
 @Module({
   controllers: [PostsController],
   providers: [PostsService],
   imports: [
+    PaginationModule,
     UsersModule, // import UsersModule to use UsersService in PostsService
     MetaOptionsModule, // import MetaOptionsModule to use MetaOptionsService in PostsService
 TagsModule, // import TagsModule to use TagsService in PostsService

@@ -7,18 +7,27 @@ import { Repository } from "typeorm";
 import { MetaOptionsService } from "src/meta-options/providers/meta-options.service";
 import { TagsService } from "src/tags/providers/tags.service";
 import { PatchPostDto } from "../dtos/patch-post.dto";
+import { GetPostsDto } from "../dtos/getPosts.dto";
+import { PaginationProvider } from "src/common/pagination/providers/pagination.provider";
+import { Paginated } from "src/common/pagination/interfaces/paginated.interface";
 
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectRepository(Post)
+    @InjectRepository(Post) 
     private readonly postRepository: Repository<Post>, // using repository pattern
+    private readonly paginationProvider: PaginationProvider,
     private readonly usersService: UsersService, // dependency injection
     private readonly tagsService: TagsService, // dependency injection
     private readonly metaOptionsService: MetaOptionsService,
   ) {}
-  public async findAllPosts() {
-    return this.postRepository.find({ relations: ['metaOption'] }); // fetch all posts with their meta options
+  public async findAllPosts(postQuery: GetPostsDto): Promise<Paginated<Post>> {
+    return this.paginationProvider.paginatedQuery({
+      limit: postQuery.limit ,
+      page: postQuery.page
+    },
+    this.postRepository
+    ); 
   }
 
   public findPostById(id: number | string) {

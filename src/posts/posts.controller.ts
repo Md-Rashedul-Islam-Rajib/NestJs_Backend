@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { PostsService } from './providers/posts.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { PatchPostDto } from './dtos/patch-post.dto';
+import { GetPostsDto } from './dtos/getPosts.dto';
 
 @Controller('posts')
 @ApiTags('Posts') // grouping the endpoints in swagger ui
@@ -12,8 +13,11 @@ export class PostsController {
     ){}
 
     @Get()
-    public getAllPosts() {
-        return this.postsService.findAllPosts();
+    public getAllPosts(
+        @Query() postQuery : GetPostsDto,
+    ) {
+        console.log(postQuery)
+        return this.postsService.findAllPosts(postQuery);
     }
 
     @ApiResponse({ status: 200, description: 'The post has been successfully fetched.' })
