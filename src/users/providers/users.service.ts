@@ -1,6 +1,6 @@
 import { AuthService } from 'src/auth/providers/auth.service';
 import { GetUserParamsDto } from './../dtos/getUserParams.dto';
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { User } from '../user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -41,7 +41,9 @@ export class UsersService {
          }
      });
      if (existingUser) {
-         throw new Error('User with this email already exists');
+         throw new BadRequestException('User with this email already exists', {
+             description: "user already exist with this email in the database. Please change the email and try again."
+         });
      }
      const newUser = this.userRepository.create(createUserDto);
         return this.userRepository.save(newUser);
@@ -82,6 +84,10 @@ export class UsersService {
  */
 
     public async findUserById(id: number) {
-return await this.userRepository.findOne({ where: { id } }); 
+        const user = await this.userRepository.findOne({ where: { id } }); 
+        if (!user) {
+            throw new BadRequestException("User with this id is not exists.")
+        }
+        return user;
     }
 }
