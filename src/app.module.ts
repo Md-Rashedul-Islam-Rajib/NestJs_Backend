@@ -13,6 +13,7 @@ import { PaginationModule } from './common/pagination/pagination.module';
 import  appConfig  from './config/app.config';
 import databaseConfig from './config/database.config';
 import envValidation from './config/env.validation';
+import { Post } from './posts/post.entity';
 
 
 const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently use
@@ -28,7 +29,7 @@ const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently 
       // envFilePath: ['.env.development'], // tell the app what env it use
       envFilePath: !ENV ? '.env' : `.env.${ENV}`, // use the environment variable dynamically
       load: [appConfig, databaseConfig],
-      validationSchema: [envValidation] // validate env variables
+      validationSchema: envValidation // validate env variables
     }),
     TypeOrmModule.forRootAsync({
       // database connection settings
@@ -37,7 +38,7 @@ const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently 
       useFactory: (configService: ConfigService) => ({
         // factory function to create the configuration object
         type: 'postgres' as const,
-        entities: [User],
+        entities: [User,Post],
         autoLoadEntities: configService.get('database.autoLoadEntities'), // automatically load entities
         synchronize: configService.get('database.synchronize'),
         database: configService.get<string>('database.name'),

@@ -6,11 +6,12 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import {
-    ConfigService,
-    // ConfigType
+    ConfigService,    // ConfigType
 } from '@nestjs/config';
 import { CreateManyProvider } from './create-many.provider';
 import { CreateManyUserDto } from '../dtos/create-many-users.dto';
+import { CreateUserProvider } from './create-user.provider';
+import { FindUserByEmailProvider } from './find-user-by-email.provider';
 /**
  * class to connect users tables and perform business logic
  */
@@ -32,26 +33,15 @@ export class UsersService {
         @Inject()
         private readonly configService: ConfigService, // using config service for accessing env variables
 
+        private readonly createUserProvider: CreateUserProvider,
+        private readonly findUserByEmailProvider: FindUserByEmailProvider,
+
         @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService // dependency injection
 ) { }
 
  public async createUser(createUserDto: CreateUserDto): Promise<User> {
-     const envVariable = this.configService.get("DB_Url") as string; // accessing env
-     console.log(envVariable)
-     const existingUser = await this.userRepository.findOne({
-         where:
-         {
-             email: createUserDto.email
-         }
-     });
-     if (existingUser) {
-         throw new BadRequestException('User with this email already exists', {
-             description: "user already exist with this email in the database. Please change the email and try again."
-         });
-     }
-     const newUser = this.userRepository.create(createUserDto);
-        return this.userRepository.save(newUser);
+   return this.createUserProvider.createUser(createUserDto)
     }   
     
     /**
@@ -100,4 +90,7 @@ export class UsersService {
         return await this.createManyUser.createMany(createManyUserDto)
     }
 
+    public async findUserByEmail(email: string) {
+        return this.findUserByEmailProvider.findUserByEmail(email);
+    }
 }
