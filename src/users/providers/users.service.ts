@@ -5,6 +5,10 @@ import { User } from '../user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import {
+    ConfigService,
+    // ConfigType
+} from '@nestjs/config';
 /**
  * class to connect users tables and perform business logic
  */
@@ -14,11 +18,22 @@ export class UsersService {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>, // using repository pattern
-    @Inject(forwardRef(() => AuthService))
+
+        /**
+         * module configuration for profile or similar things
+         */
+        // @Inject(profileConfig.KEY)
+        //     private readonly profileConfiguration : ConfigType<typeof profileConfig>
+        @Inject()
+        private readonly configService: ConfigService, // using config service for accessing env variables
+
+        @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService // dependency injection
 ) { }
 
  public async createUser(createUserDto: CreateUserDto): Promise<User> {
+     const envVariable = this.configService.get("DB_Url") as string; // accessing env
+     console.log(envVariable)
      const existingUser = await this.userRepository.findOne({
          where:
          {
