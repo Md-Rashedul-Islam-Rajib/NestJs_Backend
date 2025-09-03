@@ -9,6 +9,8 @@ import {
     ConfigService,
     // ConfigType
 } from '@nestjs/config';
+import { CreateManyProvider } from './create-many.provider';
+import { CreateManyUserDto } from '../dtos/create-many-users.dto';
 /**
  * class to connect users tables and perform business logic
  */
@@ -18,6 +20,9 @@ export class UsersService {
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>, // using repository pattern
+
+
+        private readonly createManyUser : CreateManyProvider,
 
         /**
          * module configuration for profile or similar things
@@ -90,4 +95,9 @@ export class UsersService {
         }
         return user;
     }
+
+    public async createMany(createManyUserDto: CreateManyUserDto) {
+        return await this.createManyUser.createMany(createManyUserDto)
+    }
+
 }

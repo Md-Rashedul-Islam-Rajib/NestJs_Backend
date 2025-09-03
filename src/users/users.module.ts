@@ -4,10 +4,11 @@ import { UsersService } from './providers/users.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
+import { CreateManyProvider } from './providers/create-many.provider';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, CreateManyProvider],
   exports: [UsersService], // export UsersService to be used in other modules
 imports: [forwardRef(()=> AuthModule), 
   TypeOrmModule.forFeature([User]) // import User entity for TypeORM
