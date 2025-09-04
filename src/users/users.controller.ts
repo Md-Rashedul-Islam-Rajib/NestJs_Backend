@@ -1,47 +1,98 @@
-import { Body, Controller, DefaultValuePipe, Get, Headers, Ip, Param, ParseIntPipe, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Headers,
+  Ip,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiAcceptedResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/authType.enum';
+import { CreateManyUserDto } from './dtos/create-many-users.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { GetUserParamsDto } from './dtos/getUserParams.dto';
 import { PatchUserDto } from './dtos/patch-user.dto';
 import { UsersService } from './providers/users.service';
-import { GetUserParamsDto } from './dtos/getUserParams.dto';
-import { ApiAcceptedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateManyUserDto } from './dtos/create-many-users.dto';
 
 @Controller('users')
-  @ApiTags('Users') // grouping the endpoints in swagger ui
+@ApiTags('Users') // grouping the endpoints in swagger ui
 export class UsersController {
   constructor(
     private readonly usersService: UsersService, // dependency injection
-  ){}
-  
+  ) {}
+
   @Get()
   public getAllUsers(@Query() params: GetUserParamsDto) {
     const limit: number = params.limit ? params.limit : 10;
     const page: number = params.page ? params.page : 1;
     return this.usersService.findAllUsers(params, limit, page);
   }
-  
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID or filter by role, age, limit, offset, page' })
-  @ApiAcceptedResponse({ description: 'The user has been successfully fetched.' })
-    @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiOperation({
+    summary: 'Get user by ID or filter by role, age, limit, offset, page',
+  })
+  @ApiAcceptedResponse({
+    description: 'The user has been successfully fetched.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-    @ApiQuery({ name: 'role', required: false, type: String, description: 'Role of the user to filter' })
-    @ApiQuery({ name: 'age', required: false, type: Number, description: 'Age of the user to filter' })
-    @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items to return', example: 10 })
-    @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Number of items to skip', example: 0 })
-    @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for pagination', example: 1 })
-  
-      public getUserById(
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    type: String,
+    description: 'Role of the user to filter',
+  })
+  @ApiQuery({
+    name: 'age',
+    required: false,
+    type: Number,
+    description: 'Age of the user to filter',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items to return',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    type: Number,
+    description: 'Number of items to skip',
+    example: 0,
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number for pagination',
+    example: 1,
+  })
+  public getUserById(
     @Param('id') id?: string,
     @Query('role') role?: string,
     @Query('age') age?: number,
     // using DefaultValuePipe to set default value if no value is provided in query
     // using ParseIntPipe to convert string to number
-    @Query('limit', new DefaultValuePipe(10),ParseIntPipe) limit?: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
     @Query('offset') offset?: number,
-    @Query('page',new DefaultValuePipe(1),ParseIntPipe) page?: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
   ) {
     console.log({ limit, offset, page });
     if (id) {
@@ -68,9 +119,10 @@ export class UsersController {
   }
 
   @Post()
-
-      // using @Req decorator for using express request to get the whole body
-       // ! not recommended, unless you need something specific from express like alter the request what not possible with nestjs 
+  // @SetMetadata('authType','none')
+  @Auth(AuthType.None)
+  // using @Req decorator for using express request to get the whole body
+  // ! not recommended, unless you need something specific from express like alter the request what not possible with nestjs
   public createUserProfile(
     @Req() requestBody: Request,
     @Headers() headers: any,
@@ -82,16 +134,15 @@ export class UsersController {
     return 'Create user profile';
   }
 
+  // @UseGuards(AccessTokenGuard) 
   @Post('create-many')
   public createManyUsers(@Body() createManyUserDto: CreateManyUserDto) {
-    return this.usersService.createMany(createManyUserDto)
+    return this.usersService.createMany(createManyUserDto);
   }
 
   @Patch()
-  public updateUser(
-     @Body() body: PatchUserDto
-  ) {
-   console.log(body);
+  public updateUser(@Body() body: PatchUserDto) {
+    console.log(body);
     return body;
   }
 }

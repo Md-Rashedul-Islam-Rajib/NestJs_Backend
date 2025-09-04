@@ -10,6 +10,8 @@ import { PatchPostDto } from "../dtos/patch-post.dto";
 import { GetPostsDto } from "../dtos/getPosts.dto";
 import { PaginationProvider } from "src/common/pagination/providers/pagination.provider";
 import { Paginated } from "src/common/pagination/interfaces/paginated.interface";
+import { CreatePostProvider } from "./create-post.provider";
+import { IActiveUser } from "src/auth/interfaces/active-user.interface";
 
 @Injectable()
 export class PostsService {
@@ -20,6 +22,7 @@ export class PostsService {
     private readonly usersService: UsersService, // dependency injection
     private readonly tagsService: TagsService, // dependency injection
     private readonly metaOptionsService: MetaOptionsService,
+    private readonly createPostProvider: CreatePostProvider
   ) {}
   public async findAllPosts(postQuery: GetPostsDto): Promise<Paginated<Post>> {
     return this.paginationProvider.paginatedQuery({
@@ -40,44 +43,8 @@ export class PostsService {
     };
   }
 
-  public async createPost(createPostDto: CreatePostDto): Promise<Post> {
-    const existingPost = await this.postRepository.findOne({
-      where: { title: createPostDto.title },
-    });
-
-    if (existingPost) {
-      throw new ConflictException('Post with this title already exists');
-    }
-
-    const author = await this.usersService.findUserById(createPostDto.authorId);
-    // Create post entity manually to ensure proper typing
-if (!author) {
-      throw new NotFoundException('Author not found');
-    }
-
-    const tags = await this.tagsService.findAllTags(createPostDto.tags || []);
-
-    if (tags.length !== (createPostDto.tags || []).length) {
-      throw new NotFoundException('One or more tags not found');
-    }
-    const newPost = new Post();
-    newPost.title = createPostDto.title;
-    newPost.postType = createPostDto.postType;
-    newPost.postStatus = createPostDto.postStatus;
-    newPost.slug = createPostDto.slug;
-    newPost.content = createPostDto.content;
-newPost.tags = tags; 
-    newPost.publishOn = createPostDto.publishOn;
-    newPost.author = author;
-    // Handle meta option if provided
-    if (createPostDto.metaOption) {
-      const metaOption = await this.metaOptionsService.create(
-        createPostDto.metaOption,
-      );
-      newPost.metaOption = metaOption;
-    }
-
-    return this.postRepository.save(newPost);
+  public async createPost(createPostDto: CreatePostDto,user:IActiveUser): Promise<Post> {
+   return this.createPostProvider.createPost(createPostDto,user)
   }
 
   public async updatePost(patchPostDto: PatchPostDto) {

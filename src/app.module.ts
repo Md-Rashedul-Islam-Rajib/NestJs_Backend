@@ -14,6 +14,11 @@ import  appConfig  from './config/app.config';
 import databaseConfig from './config/database.config';
 import envValidation from './config/env.validation';
 import { Post } from './posts/post.entity';
+import { JwtModule } from '@nestjs/jwt';
+import jwtConfig from './auth/config/jwt.config';
+import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
 
 
 const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently use
@@ -51,11 +56,20 @@ const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently 
         ),
       }),
     }),
+    ConfigModule.forFeature(jwtConfig),
+        JwtModule.registerAsync(jwtConfig.asProvider()),
     TagsModule,
     MetaOptionsModule,
     PaginationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+     { // using guard globally to this module
+          provide: APP_GUARD, // tell nestjs for you want to use guard
+          useClass:AuthenticationGuard // tell nestjs which guard you want to use
+    },
+     AccessTokenGuard // dependency of useClass 
+  ],
 })
 export class AppModule {}
