@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   DefaultValuePipe,
   Get,
@@ -11,6 +12,7 @@ import {
   Post,
   Query,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiAcceptedResponse,
@@ -136,6 +138,7 @@ export class UsersController {
 
   // @UseGuards(AccessTokenGuard) 
   @Post('create-many')
+    @UseInterceptors(ClassSerializerInterceptor) // using interceptor for altering response brfore/after controller
   public createManyUsers(@Body() createManyUserDto: CreateManyUserDto) {
     return this.usersService.createMany(createManyUserDto);
   }

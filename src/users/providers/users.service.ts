@@ -12,6 +12,9 @@ import { CreateManyProvider } from './create-many.provider';
 import { CreateManyUserDto } from '../dtos/create-many-users.dto';
 import { CreateUserProvider } from './create-user.provider';
 import { FindUserByEmailProvider } from './find-user-by-email.provider';
+import { FindUserByGoogleIdProvider } from './find-user-by-google-id.provider';
+import { CreateUserByGoogleProvider } from './create-user-by-google.provider';
+import { GoogleUser } from '../interface/googleUser.interface';
 /**
  * class to connect users tables and perform business logic
  */
@@ -24,6 +27,7 @@ export class UsersService {
 
 
         private readonly createManyUser : CreateManyProvider,
+        private readonly createUserByGoogle : CreateUserByGoogleProvider,
 
         /**
          * module configuration for profile or similar things
@@ -35,6 +39,7 @@ export class UsersService {
 
         private readonly createUserProvider: CreateUserProvider,
         private readonly findUserByEmailProvider: FindUserByEmailProvider,
+        private readonly findUserByGoogleIdProvider: FindUserByGoogleIdProvider,
 
         @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService // dependency injection
@@ -92,5 +97,12 @@ export class UsersService {
 
     public async findUserByEmail(email: string) {
         return this.findUserByEmailProvider.findUserByEmail(email);
+    }
+    public async findUserByGoogleId(googleId: string) {
+        return this.findUserByGoogleIdProvider.findUserByGoogleId(googleId)
+    }
+
+    public async createUserByGoogleId(googleUser: GoogleUser) {
+        return this.createUserByGoogle.createGoogleUser(googleUser)
     }
 }

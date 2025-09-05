@@ -7,6 +7,8 @@ import { FindUserByEmailProvider } from './providers/find-user-by-email.provider
 import { UsersService } from './providers/users.service';
 import { User } from './user.entity';
 import { UsersController } from './users.controller';
+import { FindUserByGoogleIdProvider } from './providers/find-user-by-google-id.provider';
+import { CreateUserByGoogleProvider } from './providers/create-user-by-google.provider';
 
 @Module({
   controllers: [UsersController],
@@ -15,6 +17,8 @@ import { UsersController } from './users.controller';
     CreateManyProvider,
     CreateUserProvider,
     FindUserByEmailProvider,
+    FindUserByGoogleIdProvider,
+    CreateUserByGoogleProvider,
     // { // using guard globally to this module
     //   provide: APP_GUARD, // tell nestjs for you want to use guard
     //   useClass:AccessTokenGuard // tell nestjs which guard you want to use

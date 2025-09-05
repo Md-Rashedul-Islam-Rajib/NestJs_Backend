@@ -17,8 +17,11 @@ import { Post } from './posts/post.entity';
 import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './auth/config/jwt.config';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
+import { DataResponseInterceptor } from './common/interceptors/data-response.interceptor';
+import { UploadsModule } from './uploads/uploads.module';
+import { MailModule } from './mail/mail.module';
 
 
 const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently use
@@ -61,6 +64,8 @@ const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently 
     TagsModule,
     MetaOptionsModule,
     PaginationModule,
+    UploadsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
@@ -69,6 +74,10 @@ const ENV = process.env.NODE_ENV; // grab the environment what nodejs currently 
           provide: APP_GUARD, // tell nestjs for you want to use guard
           useClass:AuthenticationGuard // tell nestjs which guard you want to use
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: DataResponseInterceptor
+     },
      AccessTokenGuard // dependency of useClass 
   ],
 })

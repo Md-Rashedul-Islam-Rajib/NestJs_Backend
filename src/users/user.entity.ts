@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { Post } from "src/posts/post.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -20,9 +21,14 @@ export class User {
     
     @Column()
         age: number;
-    @Column()
-    password: string;
+    @Column({
+        nullable:true
+    })
+        @Exclude() // using this decorator for removing this field from response using interceptor
+    password?: string;
 
+    @Column()
+    googleId?:string;
     @OneToMany(() => Post, post => post.author) // One user can have many posts
     post: Post[];
 }
